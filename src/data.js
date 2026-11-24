@@ -1,13 +1,27 @@
-// Real stack only: what Péter stated (Laravel, Inertia) plus the tools this site and project use.
+// Social links. A link with an empty url is not shown.
+export const socials = [
+  { label: 'GitHub', url: 'https://github.com/majorospeter98' },
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/majoros-peter/' },
+]
+
+// Péter's own stack list, in his order. A missing icon renders the name only.
 export const tech = [
-  { name: 'Laravel', icon: 'laravel' },
-  { name: 'PHP', icon: 'php' },
-  { name: 'Inertia.js', icon: 'inertia' },
-  { name: 'Vue 3', icon: 'vuedotjs' },
-  { name: 'Tailwind CSS', icon: 'tailwindcss' },
+  { name: 'Vue.js', icon: 'vuedotjs' },
   { name: 'JavaScript', icon: 'javascript' },
+  { name: 'TypeScript', icon: 'typescript' },
+  { name: 'Tailwind CSS', icon: 'tailwindcss' },
+  { name: 'Pinia', icon: 'pinia' },
+  { name: 'Laravel', icon: 'laravel' },
+  { name: 'Inertia.js', icon: 'inertia' },
+  { name: 'Vuetify', icon: 'vuetify' },
+  { name: 'Bootstrap', icon: 'bootstrap' },
   { name: 'shadcn-vue', icon: 'shadcnui' },
-  { name: 'Vite', icon: 'vite' },
+  { name: 'SQLite', icon: 'sqlite' },
+  { name: 'Git', icon: 'git' },
+  { name: 'GitHub', icon: 'github' },
+  { name: 'Figma', icon: 'figma' },
+  { name: 'Claude Code', icon: 'claude' },
+
 ]
 
 /*
@@ -22,7 +36,7 @@ export const tech = [
  */
 export const projects = [
   {
-    no: '1', kind: 'fullstack', year: '—', stack: ['Laravel', 'Inertia', 'Vue', 'Tailwind'],
+    no: '1', kind: 'fullstack', year: '—', stack: ['Laravel', 'Inertia', 'Vue.js', 'Tailwind'],
     title: { hu: 'Football Webshop', en: 'Football Webshop' },
     desc: {
       hu: 'Full-stack e-commerce alkalmazás Laravel, Vue.js, Inertia.js és Tailwind CSS alapokon: kosár, hitelesítés, jogosultságkezelés és rendeléskezelés.',
@@ -48,7 +62,7 @@ export const projects = [
     repo: '', live: 'https://majorospeter98.github.io/carrental/', images: [],
   },
   {
-    no: '3', kind: 'frontend', year: '—', stack: ['Vue', 'Tailwind', 'shadcn-vue'],
+    no: '3', kind: 'frontend', year: '—', stack: ['Vue.js', 'Tailwind', 'shadcn-vue'],
     title: { hu: 'Bevásárlólista', en: 'Shopping List' },
     desc: {
       hu: 'Vue.js alkalmazás Tailwind CSS-sel és shadcn-vue-val: tételkezelés és vásárlási státusz követése.',

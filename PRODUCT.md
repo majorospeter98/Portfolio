@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Vue 3 + Vite + Tailwind CSS 4 (already installed). Contact form via FormSubmit (formsubmit.co, no account). Static build; deploy target undecided.
+Vue 3 + Vite + Tailwind CSS 4 (already installed). Contact form via Web3Forms (web3forms.com). Static build; deploy target undecided.
 
 ## Users
 
@@ -24,12 +24,12 @@ Not yet defined. Open decision: what makes this developer's work or approach dis
 
 ## Operating Context
 
-Visitors arrive from a CV, a job application or a link, usually on desktop and often on mobile. They scan, then open one or two projects. Contact goes through a FormSubmit-backed form.
+Visitors arrive from a CV, a job application or a link, usually on desktop and often on mobile. They scan, then open one or two projects. Contact goes through a Web3Forms-backed form.
 
 ## Capabilities and Constraints
 
 - Frontend and full-stack project showcase.
-- Contact form via FormSubmit.
+- Contact form via Web3Forms.
 - Owner: Péter Majoros. Contact email: majoros.peter988@gmail.com.
 - Languages: Hungarian (native), English (intermediate, B2 / középfokú).
 - Self-description: frontend-heavy full-stack developer; one full-stack project built with Laravel and Inertia.

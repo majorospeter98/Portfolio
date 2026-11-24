@@ -17,14 +17,13 @@ export const dict = {
     skip: 'Ugrás a tartalomra',
     hero: {
       name: ['Majoros', 'Péter'],
-      cta: 'Üzenet küldése',
-      github: 'GitHub profil',
+      photoAlt: 'Majoros Péter portréfotója',
       onView: 'Kiállítva',
       prep: 'Előkészületben',
     },
     about: {
       title: 'Rólam',
-      p1: 'Frontend-orientált full-stack fejlesztő vagyok. Egy teljes értékű full-stack projektet építettem Laravel és Inertia alapokon, és a felhasználói felület az, ahol a legszívesebben dolgozom.',
+      p1: 'Frontend-heavy full-stack fejlesztő vagyok.',
       langs: 'Nyelvek',
       hu: 'Magyar', huLevel: 'anyanyelv',
       en: 'Angol', enLevel: 'középfok (B2)',
@@ -37,7 +36,7 @@ export const dict = {
       cols: { no: 'Sz.', title: 'Cím', year: 'Év', stack: 'Stack' },
       p1: {
         title: 'Laravel + Inertia alkalmazás',
-        desc: 'Full-stack webalkalmazás Laravel háttérrel és Inertia–Vue felülettel. A pontos cím, leírás és link hamarosan.',
+        desc: 'Full-stack webalkalmazás Laravel háttérrel és Inertia–Vue.js felülettel. A pontos cím, leírás és link hamarosan.',
         note: 'Helyőrző – a valós adatok jönnek',
       },
             link: 'Link hamarosan',
@@ -52,9 +51,10 @@ export const dict = {
       errName: 'Add meg a neved.',
       errEmail: 'Adj meg érvényes e-mail-címet.',
       errMsg: 'Írj legalább 10 karaktert.',
+      slow: 'A küldés a szokottnál tovább tart. Az üzenet valószínűleg megérkezik, ezért ne küldd el újra. Ha sürgős, írj erre a címre:',
       fail: 'Az üzenet nem ment el. Próbáld újra, vagy írj közvetlenül erre a címre:',
     },
-    footer: { back: 'Vissza a tetejére' },
+    footer: { back: 'Vissza a tetejére', social: 'Közösségi profilok' },
   },
   en: {
     title: 'Péter Majoros – Portfolio',
@@ -66,14 +66,13 @@ export const dict = {
     skip: 'Skip to content',
     hero: {
       name: ['Péter', 'Majoros'],
-      cta: 'Send a message',
-      github: 'GitHub profile',
+      photoAlt: 'Portrait photo of Péter Majoros',
       onView: 'On view',
       prep: 'In preparation',
     },
     about: {
       title: 'About',
-      p1: 'I am a frontend-leaning full-stack developer. I built a complete full-stack project on Laravel and Inertia, and the user interface is where I most like to work.',
+      p1: 'I am a frontend-heavy full-stack developer.',
       langs: 'Languages',
       hu: 'Hungarian', huLevel: 'native',
       en: 'English', enLevel: 'intermediate (B2)',
@@ -86,7 +85,7 @@ export const dict = {
       cols: { no: 'No.', title: 'Title', year: 'Year', stack: 'Stack' },
       p1: {
         title: 'Laravel + Inertia application',
-        desc: 'A full-stack web application with a Laravel back end and an Inertia–Vue interface. Exact title, description and link coming.',
+        desc: 'A full-stack web application with a Laravel back end and an Inertia–Vue.js interface. Exact title, description and link coming.',
         note: 'Placeholder – real details to follow',
       },
             link: 'Link coming soon',
@@ -101,9 +100,10 @@ export const dict = {
       errName: 'Enter your name.',
       errEmail: 'Enter a valid email address.',
       errMsg: 'Write at least 10 characters.',
+      slow: 'Sending is taking longer than usual. Your message will probably still arrive, so please do not send it again. If it is urgent, write to:',
       fail: 'The message did not go through. Try again, or write directly to:',
     },
-    footer: { back: 'Back to top' },
+    footer: { back: 'Back to top', social: 'Social profiles' },
   },
 }
 

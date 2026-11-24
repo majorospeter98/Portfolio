@@ -7,7 +7,6 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
 
 <template>
   <header class="head">
-    <a href="#top" class="brand">Majoros Péter</a>
     <nav aria-label="Main" class="nav">
       <a v-for="l in links" :key="l" :href="'#' + l">{{ t().nav[l] }}</a>
     </nav>
@@ -20,12 +19,12 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
 
 <style scoped>
 .head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 1.5rem; height: 4.25rem; padding: 0 clamp(1.25rem, 4vw, 3rem); background: var(--wall); border-bottom: 1px solid var(--rule); }
-.brand { font-weight: 700; letter-spacing: -.01em; margin-right: auto; }
-.nav { display: flex; gap: 2rem; font-size: .95rem; color: var(--mute); }
+
+.nav { display: flex; margin-left: auto; gap: 2rem; font-size: .95rem; color: var(--mute); }
 .nav a { padding: .4rem 0; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
 .nav a:hover { color: var(--ink); border-color: var(--accent); }
 .tools { display: flex; gap: .5rem; }
-.chip { border: 1px solid var(--rule); color: var(--ink); padding: .4rem .75rem; font-size: .75rem; background: transparent; cursor: pointer; transition: border-color .2s, color .2s; }
+.chip { border: 1px solid var(--rule); color: var(--ink); padding: .4rem .75rem; font-size: .8125rem; background: transparent; cursor: pointer; transition: border-color .2s, color .2s; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 860px) {
   .head { flex-wrap: wrap; height: auto; padding-block: .6rem; gap: .5rem .75rem; }

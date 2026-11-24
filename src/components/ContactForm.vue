@@ -2,14 +2,16 @@
 import { reactive, ref, nextTick } from 'vue'
 import { t, EMAIL } from '../i18n'
 
-// FormSubmit (formsubmit.co): no account; the first message triggers a one-time activation email.
-const ENDPOINT = 'https://formsubmit.co/ajax/' + EMAIL
+// Web3Forms (web3forms.com). The access key is public by design: it only lets this site
+// send messages to the inbox it was created for.
+const ENDPOINT = 'https://api.web3forms.com/submit'
+const ACCESS_KEY = '7e32befb-ca9d-4004-814d-90c0efa811d6'
 const LIMITS = { name: 100, email: 120, message: 2000 }
 
 const f = reactive({ name: '', email: '', message: '', _gotcha: '' })
 // store error *keys*, so the text follows the language toggle
 const errors = reactive({ name: '', email: '', message: '' })
-const status = ref('idle') // idle | sending | ok | fail
+const status = ref('idle') // idle | sending | ok | slow | fail
 const form = ref(null)
 
 const rules = {
@@ -30,25 +32,31 @@ async function submit() {
   if (f._gotcha || status.value === 'sending') return
   status.value = 'sending'
   const ctrl = new AbortController()
-  const timer = setTimeout(() => ctrl.abort(), 12000)
+  const timer = setTimeout(() => ctrl.abort(), 20000)
   try {
-    const body = new FormData()
-    body.append('name', f.name.trim())
-    body.append('email', f.email.trim())
-    body.append('message', f.message.trim())
-    body.append('_subject', 'Üzenet a portfólióról – ' + f.name.trim())
-    body.append('_template', 'table')
-    body.append('_captcha', 'false')
-    const res = await fetch(ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body, signal: ctrl.signal })
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: ACCESS_KEY,
+        subject: 'Üzenet a portfólióról – ' + f.name.trim(),
+        from_name: 'Portfólió',
+        name: f.name.trim(),
+        email: f.email.trim(),
+        message: f.message.trim(),
+      }),
+      signal: ctrl.signal,
+    })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok || data.success === 'false' || data.success === false) {
-      console.error('FormSubmit:', res.status, data)
+    if (!res.ok || !data.success) {
+      console.error('Web3Forms:', res.status, data)
       throw new Error('send failed')
     }
     status.value = 'ok'
     f.name = f.email = f.message = ''
-  } catch {
-    status.value = 'fail'
+  } catch (e) {
+    // a timeout does not prove the message was lost, so do not claim a failure
+    status.value = e?.name === 'AbortError' ? 'slow' : 'fail'
   } finally {
     clearTimeout(timer)
   }
@@ -87,6 +95,7 @@ async function submit() {
         </button>
 
         <p v-if="status === 'ok'" class="note ok" role="status">{{ t().contact.ok }}</p>
+        <p v-if="status === 'slow'" class="note" role="status">{{ t().contact.slow }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
         <p v-if="status === 'fail'" class="note bad" role="alert">{{ t().contact.fail }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
       </form>
     </div>
