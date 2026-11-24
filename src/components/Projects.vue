@@ -26,8 +26,8 @@ const ytId = (p) => {
 }
 const isFile = (p) => /\.(mp4|webm)(\?.*)?$/i.test(p.video || '')
 const hasLinks = (p) => p.live || p.repo || p.video || p.privateRepo
-// the address shown in the browser frame: the live demo when there is one, else the repository
-const address = (p) => (p.live || p.repo || '').replace(/^https?:\/\//, '').replace(/\/$/, '')
+// the address shown in the browser frame: the live demo only; no address bar text when there is none
+const address = (p) => (p.live || '').replace(/^https?:\/\//, '').replace(/\/$/, '')
 
 function select(i) {
   active.value = i
@@ -79,8 +79,8 @@ function onKey(e) {
     >
       <div v-if="current(project) || ytId(project) || isFile(project)" class="media">
         <div v-if="current(project)" class="win">
-          <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span class="mono">{{ address(project) }}</span></div>
-          <img :src="current(project).src" :alt="current(project).alt" class="shot" width="1910" height="950" />
+          <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span v-if="address(project)" class="mono">{{ address(project) }}</span></div>
+          <img :src="current(project).src" :alt="current(project).alt" class="shot" />
         </div>
         <div v-if="shots(project).length > 1" class="ticks" role="group" :aria-label="title(project)">
           <button
@@ -143,11 +143,12 @@ function onKey(e) {
 .bar { display: flex; align-items: center; gap: .4rem; height: 2.1rem; padding: 0 .8rem; background: color-mix(in srgb, var(--panel) 70%, var(--rule)); border-bottom: 1px solid var(--rule); }
 .bar i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--rule); flex: none; }
 .bar span { margin-left: .6rem; flex: 1; max-width: 22rem; padding: .15rem .8rem; font-size: .8125rem; color: var(--mute); background: var(--wall); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.shot { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; filter: brightness(.95); }
+.shot { display: block; width: 100%; height: auto; filter: brightness(.95); }
 
 .ticks { display: flex; gap: .4rem; }
 .tick { flex: 1; height: 1.5rem; padding: 0; border: 0; background: transparent; cursor: pointer; position: relative; }
 .tick::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; background: var(--rule); transition: background .2s; }
+@media (pointer: coarse) { .tick { height: 2.75rem; } }
 .tick:hover::after { background: var(--mute); }
 .tick[aria-pressed="true"]::after { background: var(--accent); }
 .cap { font-size: .8125rem; color: var(--mute); }
@@ -170,6 +171,10 @@ h3 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); font-weight: 700; }
 .soon { font-size: .85rem; color: var(--mute); align-self: center; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-@media (max-width: 860px) { .panel { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 860px) {
+  .panel { grid-template-columns: minmax(0, 1fr); }
+  .tabs { width: 100%; }
+  .tab { flex: 1 1 0; min-width: 0; min-height: 2.75rem; padding: .6rem .5rem; font-size: .9rem; white-space: normal; line-height: 1.2; }
+}
 @media (prefers-reduced-motion: reduce) { .panel { animation: none; } }
 </style>

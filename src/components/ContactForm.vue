@@ -73,19 +73,20 @@ async function submit() {
       </div>
 
       <form ref="form" novalidate @submit.prevent="submit">
+        <p class="req">{{ t().contact.required }}</p>
         <div class="field">
           <label for="c-name">{{ t().contact.name }}</label>
-          <input id="c-name" v-model="f.name" name="name" type="text" autocomplete="name" :maxlength="LIMITS.name" :aria-invalid="!!errors.name" aria-describedby="e-name" @blur="check('name')" @input="errors.name && check('name')" />
+          <input id="c-name" v-model="f.name" name="name" type="text" autocomplete="name" aria-required="true" :maxlength="LIMITS.name" :aria-invalid="!!errors.name" aria-describedby="e-name" @blur="check('name')" @input="errors.name && check('name')" />
           <p id="e-name" class="err" role="alert">{{ msg('name') }}</p>
         </div>
         <div class="field">
           <label for="c-email">{{ t().contact.email }}</label>
-          <input id="c-email" v-model="f.email" name="email" type="email" autocomplete="email" :maxlength="LIMITS.email" :aria-invalid="!!errors.email" aria-describedby="e-email" @blur="check('email')" @input="errors.email && check('email')" />
+          <input id="c-email" v-model="f.email" name="email" type="email" autocomplete="email" aria-required="true" :maxlength="LIMITS.email" :aria-invalid="!!errors.email" aria-describedby="e-email" @blur="check('email')" @input="errors.email && check('email')" />
           <p id="e-email" class="err" role="alert">{{ msg('email') }}</p>
         </div>
         <div class="field">
           <label for="c-msg">{{ t().contact.message }}</label>
-          <textarea id="c-msg" v-model="f.message" name="message" rows="5" :maxlength="LIMITS.message" :aria-invalid="!!errors.message" aria-describedby="e-msg" @blur="check('message')" @input="errors.message && check('message')"></textarea>
+          <textarea id="c-msg" v-model="f.message" name="message" rows="5" aria-required="true" :maxlength="LIMITS.message" :aria-invalid="!!errors.message" aria-describedby="e-msg" @blur="check('message')" @input="errors.message && check('message')"></textarea>
           <p id="e-msg" class="err" role="alert">{{ msg('message') }}</p>
         </div>
         <input v-model="f._gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
@@ -107,6 +108,8 @@ async function submit() {
 .intro { color: var(--mute); margin: 1rem 0 2rem; }
 .mail { display: block; width: fit-content; margin-top: 1.5rem; font-size: .95rem; border-bottom: 1px solid var(--accent); padding-bottom: .15rem; overflow-wrap: anywhere; }
 .btn + .mail { margin-top: 1.25rem; }
+.mail { position: relative; }
+.mail::before { content: ''; position: absolute; inset: -.6rem -.4rem; }
 .mail:hover { color: var(--accent); }
 form { display: grid; gap: 1.1rem; }
 .field { display: grid; gap: .4rem; }
@@ -115,6 +118,7 @@ input:not(.hp), textarea { width: 100%; background: var(--panel); color: var(--i
 input:not(.hp):hover, textarea:hover { border-color: var(--mute); }
 input:not(.hp):focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent); }
 input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--accent); }
+.req { font-size: .85rem; color: var(--mute); }
 .err { min-height: 1.2em; font-size: .85rem; color: var(--accent); }
 .hp { position: absolute; left: -9999px; }
 form .btn { justify-self: start; }

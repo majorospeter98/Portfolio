@@ -13,7 +13,6 @@
   "description": "",
   "type": "module",
   "dependencies": {
-    "@formspree/core": "^4.0.0",
     "vue": "^3.5.46"
   },
   "devDependencies": {

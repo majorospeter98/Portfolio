@@ -29,6 +29,10 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
 @media (max-width: 860px) {
   .head { flex-wrap: wrap; height: auto; padding-block: .6rem; gap: .5rem .75rem; }
   .nav { order: 3; width: 100%; gap: 1.5rem; font-size: .9rem; padding-bottom: .2rem; }
-  .nav a { padding: .6rem 0; }
+  .nav a { padding: .65rem 0; }
+}
+/* 44px hit areas wherever a finger may be the pointer */
+@media (pointer: coarse), (max-width: 860px) {
+  .chip { min-height: 2.75rem; padding-inline: 1rem; }
 }
 </style>

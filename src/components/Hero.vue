@@ -12,12 +12,16 @@ import { t } from '../i18n'
         <span>{{ t().hero.name[1] }}</span>
       </h1>
       <p class="bio hang" style="--i:1">{{ t().about.p1 }}</p>
-      <p class="mono langs hang" style="--i:2">{{ t().about.hu }}: {{ t().about.huLevel }} · {{ t().about.en }}: {{ t().about.enLevel }}</p>
+      <div class="actions hang" style="--i:2">
+        <a class="btn primary" href="#contact">{{ t().hero.cta }}</a>
+        <a class="btn" href="#projects">{{ t().hero.projects }}</a>
+      </div>
+      <p class="mono langs hang" style="--i:3">{{ t().about.hu }}: {{ t().about.huLevel }} · {{ t().about.en }}: {{ t().about.enLevel }}</p>
     </div>
 
     <div class="mat hang" style="--i:2">
       <img
-        src="/profile.png"
+        src="/projects/profile.webp"
         :alt="t().hero.photoAlt"
         width="460"
         height="460"
@@ -35,7 +39,9 @@ import { t } from '../i18n'
 .name { font-size: clamp(3.4rem, 10vw, 6rem); font-weight: 800; letter-spacing: -.04em; line-height: .92; margin-bottom: 2rem; }
 .name span { display: block; }
 .bio { color: var(--ink); font-size: clamp(1.1rem, 1.6vw, 1.3rem); line-height: 1.45; }
-.langs { font-size: .8125rem; color: var(--mute); margin-top: 1rem; }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.actions .btn { min-height: 2.75rem; }
+.langs { font-size: .8125rem; color: var(--mute); margin-top: 1.5rem; }
 
 /* the portrait hangs in a mat; greyscale until hovered so it sits in the palette */
 .mat { position: relative; justify-self: end; width: min(100%, 20rem); border: 1px solid var(--rule); background: var(--panel); padding: .9rem; }
