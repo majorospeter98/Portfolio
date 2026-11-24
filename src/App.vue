@@ -2,7 +2,6 @@
 import { t } from './i18n'
 import SiteHeader from './components/SiteHeader.vue'
 import Hero from './components/Hero.vue'
-import About from './components/About.vue'
 import Technologies from './components/Technologies.vue'
 import Projects from './components/Projects.vue'
 import ContactForm from './components/ContactForm.vue'
@@ -14,9 +13,8 @@ import SiteFooter from './components/SiteFooter.vue'
   <SiteHeader />
   <main id="main">
     <Hero />
-    <About />
-    <Technologies />
     <Projects />
+    <Technologies />
     <ContactForm />
   </main>
   <SiteFooter />

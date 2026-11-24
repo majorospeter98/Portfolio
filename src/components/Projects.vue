@@ -1,118 +1,110 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { reactive } from 'vue'
 import { state, t } from '../i18n'
 import { projects } from '../data'
 
-const featured = projects[0]
-const title = (p) => (p.title ? p.title[state.lang] : t().projects.empty)
-const hasLinks = (p) => p.live || p.repo || p.video || p.privateRepo
+const title = (p) => p.title[state.lang]
+const cur = reactive({})
+const playing = reactive({})
 
-const yt = computed(() => {
-  const m = (featured.video || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/)
+// images may be plain strings or { src, alt:{hu,en}, caption:{hu,en} }
+const shots = (p) =>
+  (p.images || []).map((im) =>
+    typeof im === 'string'
+      ? { src: im, alt: title(p), caption: '' }
+      : { src: im.src, alt: im.alt?.[state.lang] || title(p), caption: im.caption?.[state.lang] || '' },
+  )
+const current = (p) => shots(p)[cur[p.no] || 0]
+const ytId = (p) => {
+  const m = (p.video || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/)
   return m ? m[1] : null
-})
-const isFile = computed(() => /\.(mp4|webm)(\?.*)?$/i.test(featured.video || ''))
-const playing = ref(false)
+}
+const isFile = (p) => /\.(mp4|webm)(\?.*)?$/i.test(p.video || '')
+const hasLinks = (p) => p.live || p.repo || p.video || p.privateRepo
 </script>
 
 <template>
   <section id="projects" class="section" aria-labelledby="proj-h">
     <div class="top">
       <h2 id="proj-h">{{ t().projects.title }}</h2>
-      <p class="intro">{{ t().projects.intro }}</p>
     </div>
 
-    <article class="main" aria-labelledby="feat-h">
-      <img v-if="featured.images[0]" :src="featured.images[0]" :alt="title(featured)" class="shot" loading="lazy" />
-      <div v-if="yt" class="video">
-        <iframe v-if="playing" :src="'https://www.youtube-nocookie.com/embed/' + yt + '?autoplay=1&rel=0'" :title="t().projects.video + ': ' + title(featured)" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-        <button v-else type="button" class="play" :style="{ backgroundImage: featured.poster ? 'url(' + featured.poster + ')' : 'none' }" @click="playing = true">
-          <span class="mono">▶ {{ t().projects.play }}</span>
-        </button>
-      </div>
-      <video v-else-if="isFile" class="video" controls preload="none" :poster="featured.poster" :src="featured.video" :aria-label="title(featured)"></video>
-      <div class="info">
-        <p class="mono tag">No. {{ featured.no }}<span v-if="featured.placeholder"> · {{ t().projects.p1.note }}</span></p>
-        <h3 id="feat-h">{{ title(featured) }}</h3>
-        <p class="desc">{{ featured.desc[state.lang] }}</p>
-        <p class="mono stack">{{ featured.stack.join(' · ') }}</p>
-        <div v-if="hasLinks(featured)" class="links">
-          <a v-if="featured.live" class="btn" :href="featured.live" target="_blank" rel="noopener">{{ t().projects.live }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <a v-if="featured.repo" class="btn" :href="featured.repo" target="_blank" rel="noopener">{{ t().projects.repo }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <a v-if="featured.video && !yt && !isFile" class="btn" :href="featured.video" target="_blank" rel="noopener">{{ t().projects.video }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <span v-if="featured.privateRepo" class="mono soon">{{ t().projects.onRequest }}</span>
+    <div class="list">
+    <article v-for="(p, idx) in projects" :key="p.no" class="card" :class="{ compact: idx > 0 }" :aria-labelledby="'p-' + p.no">
+      <div class="media">
+        <figure v-if="current(p)" class="stage">
+          <img :src="current(p).src" :alt="current(p).alt" class="shot" width="1910" height="950" :loading="p.no === projects[0].no ? 'eager' : 'lazy'" />
+          <figcaption v-if="current(p).caption" class="mono cap">{{ (cur[p.no] || 0) + 1 }}/{{ shots(p).length }} · {{ current(p).caption }}</figcaption>
+        </figure>
+        
+        <ul v-if="shots(p).length > 1" class="thumbs" :aria-label="title(p)">
+          <li v-for="(s, i) in shots(p)" :key="s.src">
+            <button type="button" :aria-pressed="i === (cur[p.no] || 0)" :aria-label="s.caption || s.alt" @click="cur[p.no] = i">
+              <img :src="s.src" alt="" loading="lazy" width="320" height="160" />
+            </button>
+          </li>
+        </ul>
+
+        <div v-if="ytId(p)" class="video">
+          <iframe v-if="playing[p.no]" :src="'https://www.youtube-nocookie.com/embed/' + ytId(p) + '?autoplay=1&rel=0'" :title="t().projects.video + ': ' + title(p)" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          <button v-else type="button" class="play" :style="{ backgroundImage: p.poster ? 'url(' + p.poster + ')' : 'none' }" @click="playing[p.no] = true">
+            <span class="mono">▶ {{ t().projects.play }}</span>
+          </button>
         </div>
-        <span v-else class="mono soon">{{ t().projects.link }}</span>
+        <video v-else-if="isFile(p)" class="video" controls preload="none" :poster="p.poster" :src="p.video" :aria-label="title(p)"></video>
+      </div>
+
+      <div class="info">
+        <p class="mono tag">No. {{ p.no }}<span v-if="p.year && p.year !== '—'"> · {{ p.year }}</span></p>
+        <h3 :id="'p-' + p.no">{{ title(p) }}</h3>
+        <p class="desc">{{ p.desc[state.lang] }}</p>
+        <p v-if="p.stack.length" class="mono stack">{{ p.stack.join(' · ') }}</p>
+        <ul v-if="p.highlights?.[state.lang]?.length" class="hl">
+          <li v-for="h in p.highlights[state.lang]" :key="h">{{ h }}</li>
+        </ul>
+        <div v-if="hasLinks(p)" class="links">
+          <a v-if="p.live" class="btn" :href="p.live" target="_blank" rel="noopener">{{ t().projects.live }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
+          <a v-if="p.repo" class="btn" :href="p.repo" target="_blank" rel="noopener">{{ t().projects.repo }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
+          <a v-if="p.video && !ytId(p) && !isFile(p)" class="btn" :href="p.video" target="_blank" rel="noopener">{{ t().projects.video }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
+          <span v-if="p.privateRepo" class="mono soon">{{ t().projects.onRequest }}</span>
+        </div>
       </div>
     </article>
-
-    <div class="gallery" v-if="projects.slice(1).some(x => x.images[0])">
-      <figure v-for="x in projects.slice(1).filter(x => x.images[0])" :key="x.no" class="fig">
-        <img :src="x.images[0]" :alt="title(x)" loading="lazy" width="1440" height="900" />
-        <figcaption class="mono">No. {{ x.no }} · {{ title(x) }}</figcaption>
-      </figure>
     </div>
-
-    <table class="cat mono">
-      <thead>
-        <tr>
-          <th scope="col">{{ t().projects.cols.no }}</th>
-          <th scope="col">{{ t().projects.cols.title }}</th>
-          <th scope="col">{{ t().projects.cols.year }}</th>
-          <th scope="col" class="st">{{ t().projects.cols.stack }}</th>
-          <th scope="col" class="lk"><span class="sr">Links</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="p in projects" :key="p.no" :class="{ empty: !p.title }">
-          <td>{{ p.no }}</td>
-          <th scope="row" class="nm">{{ title(p) }}</th>
-          <td>{{ p.year }}</td>
-          <td class="st">{{ p.stack.length ? p.stack.join(' · ') : '—' }}</td>
-          <td class="lk">
-            <a v-if="p.live" :href="p.live" target="_blank" rel="noopener">{{ t().projects.live }} ↗</a>
-            <a v-if="p.repo" :href="p.repo" target="_blank" rel="noopener">{{ t().projects.repo }} ↗</a>
-            <span v-if="p.privateRepo">{{ t().projects.onRequest }}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </section>
 </template>
 
 <style scoped>
-.top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(2rem, 5vw, 5rem); border-top: 1px solid var(--rule); padding-top: 2rem; }
-.intro { color: var(--mute); align-self: end; }
-.main { margin-top: 3rem; background: var(--panel); border: 1px solid var(--rule); padding: clamp(1.5rem, 4vw, 3rem); display: grid; gap: 2rem; }
-.shot { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border: 1px solid var(--rule); }
+.top { border-top: 1px solid var(--rule); padding-top: 2rem; }
+.list { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+.card { margin: 0; background: var(--panel); border: 1px solid var(--rule); padding: clamp(1.25rem, 3vw, 2.5rem); display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+.media { display: grid; gap: 1rem; min-width: 0; }
+.stage { margin: 0; }
+.shot { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; object-position: top; border: 1px solid var(--rule); background: var(--wall); }
+.ph { display: grid; place-items: center; color: var(--mute); font-size: .8rem; border-style: dashed; }
+.cap { font-size: .75rem; color: var(--mute); padding-top: .75rem; }
+.thumbs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr)); gap: .6rem; }
+.thumbs button { display: block; width: 100%; padding: 0; border: 1px solid var(--rule); background: var(--wall); cursor: pointer; opacity: .6; transition: opacity .2s, border-color .2s; }
+.thumbs button:hover { opacity: 1; }
+.thumbs button[aria-pressed="true"] { opacity: 1; border-color: var(--accent); }
+.thumbs img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; object-position: top; }
 .video { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--rule); background: var(--wall); }
 .video iframe { width: 100%; height: 100%; border: 0; display: block; }
-.play { width: 100%; height: 100%; display: grid; place-items: center; background-size: cover; background-position: center; color: var(--ink); cursor: pointer; border: 0; transition: background-color .25s; }
+.play { width: 100%; height: 100%; display: grid; place-items: center; background-size: cover; background-position: center; color: var(--ink); cursor: pointer; border: 0; background-color: transparent; }
 .play:hover span { background: var(--accent); color: var(--accent-ink); }
 .play span { background: var(--wall); border: 1px solid var(--ink); padding: .8rem 1.4rem; font-size: .85rem; transition: background .25s, color .25s; }
-.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.25rem; margin-top: 3rem; }
-.fig { margin: 0; border: 1px solid var(--rule); background: var(--panel); }
-.fig img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
-.fig figcaption { padding: .7rem .9rem; font-size: .75rem; color: var(--mute); border-top: 1px solid var(--rule); }
-.info { display: grid; gap: 1rem; max-width: 46rem; }
+.info { display: grid; gap: 1rem; min-width: 0; }
 .tag { font-size: .75rem; color: var(--accent); }
-h3 { font-size: clamp(1.8rem, 3.5vw, 2.75rem); font-weight: 700; }
+h3 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 700; }
 .desc { color: var(--mute); }
 .stack { font-size: .8rem; }
+.hl { margin: 0; padding-left: 1.1rem; color: var(--mute); display: grid; gap: .3rem; }
+.hl li::marker { color: var(--accent); }
 .links { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
-.soon { font-size: .8rem; color: var(--mute); border-top: 1px solid var(--rule); padding-top: 1rem; }
-.links .soon { border: 0; padding: 0; align-self: center; }
+.soon { font-size: .8rem; color: var(--mute); align-self: center; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.cat { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: 3rem; }
-.cat th, .cat td { text-align: left; padding: .85rem 0; border-bottom: 1px solid var(--rule); font-weight: 400; vertical-align: baseline; }
-.cat thead th { color: var(--mute); font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; }
-.cat td:first-child, .cat thead th:first-child { width: 5rem; color: var(--mute); }
-.cat td:nth-child(3), .cat thead th:nth-child(3) { width: 5rem; color: var(--mute); }
-.st { width: 14rem; color: var(--mute); }
-.lk { width: 15rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; }
-.lk a { border-bottom: 1px solid var(--accent); }
-.lk a:hover { color: var(--accent); }
-.nm { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.01em; }
-.empty .nm { color: var(--mute); font-weight: 400; }
-@media (max-width: 860px) { .top { grid-template-columns: 1fr; } .st { display: none; } .lk { width: auto; } }
+.card:first-child { grid-column: 1 / -1; }
+.compact { grid-template-columns: 1fr; gap: 1.25rem; align-content: start; }
+.compact h3 { font-size: clamp(1.4rem, 2.2vw, 1.8rem); }
+@media (max-width: 860px) { .card, .list { grid-template-columns: 1fr; } }
 </style>

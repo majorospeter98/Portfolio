@@ -16,7 +16,8 @@ export const tech = [
  *   video : YouTube URL (plays inline on click, no load before) or .mp4/.webm path; poster : optional image path
  *   repo, live : URL strings (optional). Only existing links render. Add more projects by appending entries.
  *   privateRepo : true -> shows "code on request" instead of a repo link
- *   images : ['/projects/<file>.webp'] in /public/projects (optional; first one is the exhibit)
+ *   images : strings or { src, alt{hu,en}, caption{hu,en} } in /public/projects (first one is the exhibit)
+ *   highlights : { hu: [], en: [] } optional list of confirmed backend facts
  * A slot with no title renders as "In preparation".
  */
 export const projects = [
@@ -27,7 +28,15 @@ export const projects = [
       hu: 'Full-stack e-commerce alkalmazás Laravel, Vue.js, Inertia.js és Tailwind CSS alapokon: kosár, hitelesítés, jogosultságkezelés és rendeléskezelés.',
       en: 'A full-stack e-commerce application built with Laravel, Vue.js, Inertia.js and Tailwind CSS: shopping cart, authentication, authorization and order management.',
     },
-    repo: 'https://github.com/majorospeter98/E-commerce', live: '', video: '', privateRepo: false, images: [],
+    repo: 'https://github.com/majorospeter98/E-commerce', live: '', video: '', privateRepo: false,
+    images: [
+      { src: '/projects/E-commerce/1.png', alt: { hu: 'A Football Webshop termékoldala mezekkel', en: 'Football Webshop product list with jerseys' }, caption: { hu: 'Termékek listája, szűrés csapat és márka szerint', en: 'Product list, filter by team and brand' } },
+      { src: '/projects/E-commerce/2.png', alt: { hu: 'Real Madrid mez termékoldala', en: 'Real Madrid jersey product page' }, caption: { hu: 'Termékoldal méretválasztással és kosárba tétellel', en: 'Product page with size selection and add to cart' } },
+      { src: '/projects/E-commerce/4.png', alt: { hu: 'A kosár két tétellel', en: 'Cart with two items' }, caption: { hu: 'Kosár mennyiségkezeléssel és rendelésösszesítővel', en: 'Cart with quantity controls and order summary' } },
+      { src: '/projects/E-commerce/5.png', alt: { hu: 'Rendeléseim oldal', en: 'My orders page' }, caption: { hu: 'Leadott rendelések listája', en: 'List of placed orders' } },
+      { src: '/projects/E-commerce/6.png', alt: { hu: 'Fiók áttekintő oldal', en: 'Account overview page' }, caption: { hu: 'Fiókoldal rendelésekkel és kedvencekkel', en: 'Account page with orders and favourites' } },
+      { src: '/projects/E-commerce/3.png', alt: { hu: 'Bejelentkezési oldal', en: 'Login page' }, caption: { hu: 'Bejelentkezés és regisztráció', en: 'Login and registration' } },
+    ],
   },
   {
     no: '002', kind: 'frontend', year: '—', stack: [],

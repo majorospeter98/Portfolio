@@ -1,6 +1,6 @@
 <script setup>
 import { state, t } from '../i18n'
-const links = ['about', 'tech', 'projects', 'contact']
+const links = ['projects', 'tech', 'contact']
 const toggleLang = () => (state.lang = state.lang === 'hu' ? 'en' : 'hu')
 const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dark')
 </script>
