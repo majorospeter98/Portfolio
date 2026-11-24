@@ -1,13 +1,13 @@
 // Real stack only: what Péter stated (Laravel, Inertia) plus the tools this site and project use.
 export const tech = [
-  { name: 'Laravel', area: 'backend' },
-  { name: 'PHP', area: 'language' },
-  { name: 'Inertia.js', area: 'frontend' },
-  { name: 'Vue 3', area: 'frontend' },
-  { name: 'Tailwind CSS', area: 'frontend' },
-  { name: 'JavaScript', area: 'language' },
-  { name: 'shadcn-vue', area: 'frontend' },
-  { name: 'Vite', area: 'tooling' },
+  { name: 'Laravel', icon: 'laravel' },
+  { name: 'PHP', icon: 'php' },
+  { name: 'Inertia.js', icon: 'inertia' },
+  { name: 'Vue 3', icon: 'vuedotjs' },
+  { name: 'Tailwind CSS', icon: 'tailwindcss' },
+  { name: 'JavaScript', icon: 'javascript' },
+  { name: 'shadcn-vue', icon: 'shadcnui' },
+  { name: 'Vite', icon: 'vite' },
 ]
 
 /*
@@ -22,7 +22,7 @@ export const tech = [
  */
 export const projects = [
   {
-    no: '001', kind: 'fullstack', year: '—', stack: ['Laravel', 'Inertia', 'Vue', 'Tailwind'],
+    no: '1', kind: 'fullstack', year: '—', stack: ['Laravel', 'Inertia', 'Vue', 'Tailwind'],
     title: { hu: 'Football Webshop', en: 'Football Webshop' },
     desc: {
       hu: 'Full-stack e-commerce alkalmazás Laravel, Vue.js, Inertia.js és Tailwind CSS alapokon: kosár, hitelesítés, jogosultságkezelés és rendeléskezelés.',
@@ -39,7 +39,7 @@ export const projects = [
     ],
   },
   {
-    no: '002', kind: 'frontend', year: '—', stack: [],
+    no: '2', kind: 'frontend', year: '—', stack: [],
     title: { hu: 'Autóbérlő rendszer', en: 'Car Rental System' },
     desc: {
       hu: 'Foglalási alkalmazás dátum alapú bérléssel, űrlapokkal és admin felülettel a járművek és foglalások kezeléséhez.',
@@ -48,7 +48,7 @@ export const projects = [
     repo: '', live: 'https://majorospeter98.github.io/carrental/', images: [],
   },
   {
-    no: '003', kind: 'frontend', year: '—', stack: ['Vue', 'Tailwind', 'shadcn-vue'],
+    no: '3', kind: 'frontend', year: '—', stack: ['Vue', 'Tailwind', 'shadcn-vue'],
     title: { hu: 'Bevásárlólista', en: 'Shopping List' },
     desc: {
       hu: 'Vue.js alkalmazás Tailwind CSS-sel és shadcn-vue-val: tételkezelés és vásárlási státusz követése.',

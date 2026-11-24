@@ -13,6 +13,7 @@ export const dict = {
     toggleLang: 'English',
     toggleLangLabel: 'Váltás angol nyelvre',
     toggleTheme: { dark: 'Világos téma', light: 'Sötét téma' },
+    toggleThemeLabel: { dark: 'Váltás világos témára', light: 'Váltás sötét témára' },
     skip: 'Ugrás a tartalomra',
     hero: {
       name: ['Majoros', 'Péter'],
@@ -30,9 +31,6 @@ export const dict = {
     },
     tech: {
       title: 'Technológiák',
-      intro: 'Amivel dolgozom, terület szerint.',
-      cols: { no: 'Sz.', name: 'Név', area: 'Terület' },
-      area: { backend: 'Szerveroldal', frontend: 'Kliensoldal', tooling: 'Eszköz', language: 'Nyelv' },
     },
     projects: {
       title: 'Projektek',
@@ -53,9 +51,8 @@ export const dict = {
       ok: 'Köszönöm, megkaptam az üzeneted. Hamarosan válaszolok.',
       errName: 'Add meg a neved.',
       errEmail: 'Adj meg érvényes e-mail-címet.',
-      errMsg: 'Írj legalább néhány szót.',
+      errMsg: 'Írj legalább 10 karaktert.',
       fail: 'Az üzenet nem ment el. Próbáld újra, vagy írj közvetlenül erre a címre:',
-      noId: 'Az űrlap még nincs bekötve. Írj közvetlenül erre a címre:',
     },
     footer: { back: 'Vissza a tetejére' },
   },
@@ -65,6 +62,7 @@ export const dict = {
     toggleLang: 'Magyar',
     toggleLangLabel: 'Switch to Hungarian',
     toggleTheme: { dark: 'Light theme', light: 'Dark theme' },
+    toggleThemeLabel: { dark: 'Switch to light theme', light: 'Switch to dark theme' },
     skip: 'Skip to content',
     hero: {
       name: ['Péter', 'Majoros'],
@@ -82,9 +80,6 @@ export const dict = {
     },
     tech: {
       title: 'Technologies',
-      intro: 'What I work with, by area.',
-      cols: { no: 'No.', name: 'Name', area: 'Area' },
-      area: { backend: 'Server side', frontend: 'Client side', tooling: 'Tooling', language: 'Language' },
     },
     projects: {
       title: 'Projects',
@@ -105,9 +100,8 @@ export const dict = {
       ok: 'Thank you, I received your message. I will reply soon.',
       errName: 'Enter your name.',
       errEmail: 'Enter a valid email address.',
-      errMsg: 'Write at least a few words.',
+      errMsg: 'Write at least 10 characters.',
       fail: 'The message did not go through. Try again, or write directly to:',
-      noId: 'The form is not connected yet. Write directly to:',
     },
     footer: { back: 'Back to top' },
   },

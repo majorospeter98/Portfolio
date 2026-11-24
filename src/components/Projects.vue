@@ -94,7 +94,7 @@ const hasLinks = (p) => p.live || p.repo || p.video || p.privateRepo
 .play:hover span { background: var(--accent); color: var(--accent-ink); }
 .play span { background: var(--wall); border: 1px solid var(--ink); padding: .8rem 1.4rem; font-size: .85rem; transition: background .25s, color .25s; }
 .info { display: grid; gap: 1rem; min-width: 0; }
-.tag { font-size: .75rem; color: var(--accent); }
+.tag { font-size: .75rem; color: var(--mute); }
 h3 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 700; }
 .desc { color: var(--mute); }
 .stack { font-size: .8rem; }

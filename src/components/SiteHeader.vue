@@ -13,7 +13,7 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
     </nav>
     <div class="tools">
       <button class="chip mono" type="button" :aria-label="t().toggleLangLabel" @click="toggleLang">{{ t().toggleLang }}</button>
-      <button class="chip mono" type="button" @click="toggleTheme">{{ t().toggleTheme[state.theme] }}</button>
+      <button class="chip mono" type="button" :aria-label="t().toggleThemeLabel[state.theme]" @click="toggleTheme">{{ t().toggleTheme[state.theme] }}</button>
     </div>
   </header>
 </template>
@@ -27,5 +27,9 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
 .tools { display: flex; gap: .5rem; }
 .chip { border: 1px solid var(--rule); color: var(--ink); padding: .4rem .75rem; font-size: .75rem; background: transparent; cursor: pointer; transition: border-color .2s, color .2s; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
-@media (max-width: 860px) { .nav { display: none; } .head { gap: .75rem; } }
+@media (max-width: 860px) {
+  .head { flex-wrap: wrap; height: auto; padding-block: .6rem; gap: .5rem .75rem; }
+  .nav { order: 3; width: 100%; gap: 1.5rem; font-size: .9rem; padding-bottom: .2rem; }
+  .nav a { padding: .6rem 0; }
+}
 </style>
