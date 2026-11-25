@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { t } from './i18n'
 import SiteHeader from './components/SiteHeader.vue'
 import Hero from './components/Hero.vue'

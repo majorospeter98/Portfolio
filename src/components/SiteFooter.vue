@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { t } from '../i18n'
 import { socials } from '../data'
 
@@ -8,18 +8,18 @@ const links = socials.filter((s) => s.url)
 
 <template>
   <footer class="foot">
-    <p class="mono">© {{ year }} Majoros Péter</p>
-    <ul v-if="links.length" class="social mono" :aria-label="t().footer.social">
+    <p>© {{ year }} Majoros Péter</p>
+    <ul v-if="links.length" class="social" :aria-label="t().footer.social">
       <li v-for="s in links" :key="s.label">
         <a :href="s.url" target="_blank" rel="noopener">{{ s.label }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
       </li>
     </ul>
-    <a class="mono" href="#top">{{ t().footer.back }} ↑</a>
+    <a href="#top">{{ t().footer.back }} ↑</a>
   </footer>
 </template>
 
 <style scoped>
-.foot { max-width: 90rem; margin: clamp(4.5rem, 10vw, 8rem) auto 0; padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 2.5rem; justify-content: space-between; font-size: .85rem; color: var(--mute); }
+.foot { max-width: 90rem; margin: clamp(4.5rem, 10vw, 8rem) auto 0; padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2.5rem; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 2.5rem; justify-content: space-between; font-size: .875rem; color: var(--mute); }
 .foot a { position: relative; }
 /* invisible hit area: the visible link stays small, the target reaches 44px */
 .foot a::before { content: ''; position: absolute; inset: -.65rem -.5rem; }

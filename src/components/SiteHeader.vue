@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import { state, t } from '../i18n'
-const links = ['projects', 'tech', 'contact']
+const links = ['projects', 'tech', 'contact'] as const
 const toggleLang = () => (state.lang = state.lang === 'hu' ? 'en' : 'hu')
 const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dark')
 </script>
@@ -11,8 +11,8 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
       <a v-for="l in links" :key="l" :href="'#' + l">{{ t().nav[l] }}</a>
     </nav>
     <div class="tools">
-      <button class="chip mono" type="button" :aria-label="t().toggleLangLabel" @click="toggleLang">{{ t().toggleLang }}</button>
-      <button class="chip mono" type="button" :aria-label="t().toggleThemeLabel[state.theme]" @click="toggleTheme">{{ t().toggleTheme[state.theme] }}</button>
+      <button class="chip" type="button" :aria-label="t().toggleLangLabel" @click="toggleLang">{{ t().toggleLang }}</button>
+      <button class="chip" type="button" :aria-label="t().toggleThemeLabel[state.theme]" @click="toggleTheme">{{ t().toggleTheme[state.theme] }}</button>
     </div>
   </header>
 </template>
@@ -24,7 +24,7 @@ const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dar
 .nav a { padding: .4rem 0; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
 .nav a:hover { color: var(--ink); border-color: var(--accent); }
 .tools { display: flex; gap: .5rem; }
-.chip { border: 1px solid var(--rule); color: var(--ink); padding: .4rem .75rem; font-size: .8125rem; background: transparent; cursor: pointer; transition: border-color .2s, color .2s; }
+.chip { border: 1px solid var(--rule); color: var(--ink); padding: .4rem .75rem; font-size: .875rem; font-weight: 500; background: transparent; cursor: pointer; transition: border-color .2s, color .2s; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 860px) {
   .head { flex-wrap: wrap; height: auto; padding-block: .6rem; gap: .5rem .75rem; }

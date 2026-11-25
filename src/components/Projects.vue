@@ -1,42 +1,52 @@
-<script setup>
-import { reactive, ref, computed } from 'vue'
+<script setup lang="ts">
+import { reactive, ref, computed, type ComponentPublicInstance } from 'vue'
 import { state, t } from '../i18n'
-import { projects } from '../data'
+import { projects, type Project } from '../data'
 
-const title = (p) => p.title[state.lang]
+interface Shot {
+  src: string
+  alt: string
+  caption: string
+}
+
+const title = (p: Project) => p.title[state.lang]
 const active = ref(0)
-const cur = reactive({})
-const playing = reactive({})
-const tabEls = ref([])
+const cur = reactive<Record<string, number>>({})
+const playing = reactive<Record<string, boolean>>({})
+const tabEls = ref<HTMLButtonElement[]>([])
+const setTab = (el: Element | ComponentPublicInstance | null, i: number) => {
+  if (el instanceof HTMLButtonElement) tabEls.value[i] = el
+}
 
 const project = computed(() => projects[active.value])
 
 // images may be plain strings or { src, alt:{hu,en}, caption:{hu,en} }
-const shots = (p) =>
+const shots = (p: Project): Shot[] =>
   (p.images || []).map((im) =>
     typeof im === 'string'
       ? { src: im, alt: title(p), caption: '' }
       : { src: im.src, alt: im.alt?.[state.lang] || title(p), caption: im.caption?.[state.lang] || '' },
   )
-const index = (p) => cur[p.no] || 0
-const current = (p) => shots(p)[index(p)]
-const ytId = (p) => {
+const index = (p: Project) => cur[p.no] || 0
+const current = (p: Project) => shots(p)[index(p)]
+const ytId = (p: Project) => {
   const m = (p.video || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/)
   return m ? m[1] : null
 }
-const isFile = (p) => /\.(mp4|webm)(\?.*)?$/i.test(p.video || '')
-const hasLinks = (p) => p.live || p.repo || p.video || p.privateRepo
+const isFile = (p: Project) => /\.(mp4|webm)(\?.*)?$/i.test(p.video || '')
+const hasLinks = (p: Project) => p.live || p.repo || p.video || p.privateRepo
 // the address shown in the browser frame: the live demo only; no address bar text when there is none
-const address = (p) => (p.live || '').replace(/^https?:\/\//, '').replace(/\/$/, '')
+const address = (p: Project) => (p.live || '').replace(/^https?:\/\//, '').replace(/\/$/, '')
 
-function select(i) {
+function select(i: number) {
   active.value = i
 }
-function onKey(e) {
+function onKey(e: KeyboardEvent) {
   const n = projects.length
-  const keys = { ArrowRight: 1, ArrowLeft: -1 }
-  let next = null
-  if (e.key in keys) next = (active.value + keys[e.key] + n) % n
+  const keys: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 }
+  const step = keys[e.key]
+  let next: number | null = null
+  if (step !== undefined) next = (active.value + step + n) % n
   else if (e.key === 'Home') next = 0
   else if (e.key === 'End') next = n - 1
   if (next === null) return
@@ -56,7 +66,7 @@ function onKey(e) {
       <button
         v-for="(p, i) in projects"
         :key="p.no"
-        :ref="(el) => (tabEls[i] = el)"
+        :ref="(el) => setTab(el, i)"
         :id="'tab-' + p.no"
         class="tab"
         type="button"
@@ -79,7 +89,7 @@ function onKey(e) {
     >
       <div v-if="current(project) || ytId(project) || isFile(project)" class="media">
         <div v-if="current(project)" class="win">
-          <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span v-if="address(project)" class="mono">{{ address(project) }}</span></div>
+          <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span v-if="address(project)">{{ address(project) }}</span></div>
           <img :src="current(project).src" :alt="current(project).alt" class="shot" />
         </div>
         <div v-if="shots(project).length > 1" class="ticks" role="group" :aria-label="title(project)">
@@ -93,12 +103,12 @@ function onKey(e) {
             @click="cur[project.no] = i"
           ></button>
         </div>
-        <p v-if="current(project) && current(project).caption" class="mono cap" aria-live="polite">{{ index(project) + 1 }}/{{ shots(project).length }} · {{ current(project).caption }}</p>
+        <p v-if="current(project) && current(project).caption" class="cap" aria-live="polite">{{ index(project) + 1 }}/{{ shots(project).length }} · {{ current(project).caption }}</p>
 
         <div v-if="ytId(project)" class="video">
           <iframe v-if="playing[project.no]" :src="'https://www.youtube-nocookie.com/embed/' + ytId(project) + '?autoplay=1&rel=0'" :title="t().projects.video + ': ' + title(project)" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
           <button v-else type="button" class="play" :style="{ backgroundImage: project.poster ? 'url(' + project.poster + ')' : 'none' }" @click="playing[project.no] = true">
-            <span class="mono">▶ {{ t().projects.play }}</span>
+            <span>▶ {{ t().projects.play }}</span>
           </button>
         </div>
         <video v-else-if="isFile(project)" class="video" controls preload="none" :poster="project.poster" :src="project.video" :aria-label="title(project)"></video>
@@ -107,7 +117,7 @@ function onKey(e) {
       <div class="label">
         <h3>{{ title(project) }}</h3>
         <p class="desc">{{ project.desc[state.lang] }}</p>
-        <p v-if="project.stack.length" class="mono stack">{{ project.stack.join(' · ') }}</p>
+        <p v-if="project.stack.length" class="stack">{{ project.stack.join(' · ') }}</p>
         <ul v-if="project.highlights?.[state.lang]?.length" class="hl">
           <li v-for="h in project.highlights[state.lang]" :key="h">{{ h }}</li>
         </ul>
@@ -115,7 +125,7 @@ function onKey(e) {
           <a v-if="project.live" class="btn" :href="project.live" target="_blank" rel="noopener">{{ t().projects.live }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
           <a v-if="project.repo" class="btn" :href="project.repo" target="_blank" rel="noopener">{{ t().projects.repo }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
           <a v-if="project.video && !ytId(project) && !isFile(project)" class="btn" :href="project.video" target="_blank" rel="noopener">{{ t().projects.video }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <span v-if="project.privateRepo" class="mono soon">{{ t().projects.onRequest }}</span>
+          <span v-if="project.privateRepo" class="soon">{{ t().projects.onRequest }}</span>
         </div>
       </div>
     </article>
@@ -151,7 +161,7 @@ function onKey(e) {
 @media (pointer: coarse) { .tick { height: 2.75rem; } }
 .tick:hover::after { background: var(--mute); }
 .tick[aria-pressed="true"]::after { background: var(--accent); }
-.cap { font-size: .8125rem; color: var(--mute); }
+.cap { font-size: .875rem; color: var(--mute); }
 
 .video { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--rule); background: var(--wall); }
 .video iframe { width: 100%; height: 100%; border: 0; display: block; }
@@ -163,7 +173,7 @@ function onKey(e) {
 .solo .label { max-width: 40rem; }
 h3 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); font-weight: 700; }
 .desc { color: var(--mute); }
-.stack { font-size: .85rem; }
+.stack { font-size: .9rem; font-weight: 500; }
 .hl { margin: 0; padding-left: 1.1rem; color: var(--mute); display: grid; gap: .3rem; }
 .hl li::marker { color: var(--accent); }
 .links { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: .3rem; }

@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { t } from '../i18n'
 import { tech } from '../data'
 
 // Brand marks from Simple Icons (CC0), recoloured with currentColor to follow the theme.
-const raw = import.meta.glob('../assets/tech/*.svg', { query: '?raw', import: 'default', eager: true })
-const icon = (name) => {
+const raw = import.meta.glob<string>('../assets/tech/*.svg', { query: '?raw', import: 'default', eager: true })
+const icon = (name: string) => {
   const s = raw[`../assets/tech/${name}.svg`] || ''
   return s
     .replace(/<title>.*?<\/title>/, '')
@@ -19,7 +19,7 @@ const icon = (name) => {
       <h2 id="tech-h">{{ t().tech.title }}</h2>
     </div>
     <div v-for="g in tech" :key="g.group" class="group">
-      <h3 class="gl mono">{{ t().tech.groups[g.group] }}</h3>
+      <h3 class="gl">{{ t().tech.groups[g.group] }}</h3>
       <ul class="pills">
         <li v-for="x in g.items" :key="x.name" class="pill">
           <span v-if="x.icon" class="ic" v-html="icon(x.icon)"></span>
@@ -33,7 +33,7 @@ const icon = (name) => {
 <style scoped>
 .head { border-top: 1px solid var(--rule); padding-top: 2rem; }
 .group { margin-top: 2rem; }
-.gl { font-size: .8125rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); }
+.gl { font-size: .875rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); }
 .pills { list-style: none; margin: .9rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .75rem; }
 .pill { display: inline-flex; align-items: center; gap: .8rem; border: 1px solid var(--rule); background: var(--panel); padding: .7rem 1.4rem .7rem 1.1rem; transition: border-color .25s, transform .25s cubic-bezier(.16, 1, .3, 1); }
 .pill:hover { border-color: var(--accent); transform: translateY(-2px); }

@@ -1,11 +1,42 @@
+export type Lang = 'hu' | 'en'
+export type Localized<T = string> = Record<Lang, T>
+
+export interface Social {
+  label: string
+  url: string
+}
+
+export type TechGroup = 'frontend' | 'backend' | 'tools'
+
+export interface TechItem {
+  name: string
+  icon?: string
+}
+
+export type ProjectImage = string | { src: string; alt?: Localized; caption?: Localized }
+
+export interface Project {
+  no: string
+  stack: string[]
+  title: Localized
+  desc: Localized
+  repo?: string
+  live?: string
+  video?: string
+  poster?: string
+  privateRepo?: boolean
+  images?: ProjectImage[]
+  highlights?: Localized<string[]>
+}
+
 // Social links. A link with an empty url is not shown.
-export const socials = [
+export const socials: Social[] = [
   { label: 'GitHub', url: 'https://github.com/majorospeter98' },
   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/majoros-peter/' },
 ]
 
 // Péter's own stack list, grouped. A missing icon renders the name only.
-export const tech = [
+export const tech: { group: TechGroup; items: TechItem[] }[] = [
   { group: 'frontend', items: [
     { name: 'Vue.js', icon: 'vuedotjs' },
     { name: 'JavaScript', icon: 'javascript' },
@@ -39,9 +70,9 @@ export const tech = [
  *   highlights : { hu: [], en: [] } optional list of confirmed backend facts
  * A slot with no title renders as "In preparation".
  */
-export const projects = [
+export const projects: Project[] = [
   {
-    no: '1', kind: 'fullstack', stack: ['Vue.js', 'Laravel', 'Inertia.js', 'Tailwind CSS'],
+    no: '1', stack: ['Vue.js', 'Laravel', 'Inertia.js', 'Tailwind CSS'],
     title: { hu: 'Football Webshop', en: 'Football Webshop' },
     desc: {
       hu: 'Full-stack e-commerce alkalmazás Laravel, Vue.js, Inertia.js és Tailwind CSS alapokon: kosár, hitelesítés, jogosultságkezelés és rendeléskezelés.',
@@ -58,7 +89,7 @@ export const projects = [
     ],
   },
   {
-    no: '2', kind: 'frontend',  stack: ['Vue.js', 'JavaScript', 'Pinia', 'Bootstrap'],
+    no: '2', stack: ['Vue.js', 'JavaScript', 'Pinia', 'Bootstrap'],
     title: { hu: 'Autóbérlő rendszer', en: 'Car Rental System' },
     desc: {
       hu: 'Foglalási alkalmazás dátum alapú bérléssel, űrlapokkal és admin felülettel a járművek és foglalások kezeléséhez.',
@@ -67,7 +98,7 @@ export const projects = [
     repo: 'https://github.com/majorospeter98/carrental', live: 'https://majorospeter98.github.io/carrental/', images: [],
   },
   {
-    no: '3', kind: 'frontend',  stack: ['Vue.js', 'JavaScript', 'Tailwind CSS', 'Shadcn'],
+    no: '3', stack: ['Vue.js', 'JavaScript', 'Tailwind CSS', 'Shadcn'],
     title: { hu: 'Bevásárlólista', en: 'Shopping List' },
     desc: {
       hu: 'Vue.js alkalmazás Tailwind CSS-sel és shadcn-vue-val: tételkezelés és vásárlási státusz követése.',

@@ -1,10 +1,10 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
 // Social crawlers need absolute URLs. Set VITE_SITE_URL (e.g. https://your-domain.com) in .env or on
 // the host, and the canonical link, og:url and the preview image are added to the built page.
-function socialUrls(siteUrl) {
+function socialUrls(siteUrl: string | undefined): Plugin {
   return {
     name: 'social-urls',
     transformIndexHtml() {

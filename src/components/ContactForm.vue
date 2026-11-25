@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { reactive, ref, nextTick } from 'vue'
 import { t, EMAIL } from '../i18n'
 
@@ -8,25 +8,32 @@ const ENDPOINT = 'https://api.web3forms.com/submit'
 const ACCESS_KEY = '7e32befb-ca9d-4004-814d-90c0efa811d6'
 const LIMITS = { name: 100, email: 120, message: 2000 }
 
+type FieldName = keyof typeof LIMITS
+type ErrorKey = '' | 'errName' | 'errEmail' | 'errMsg'
+type Status = 'idle' | 'sending' | 'ok' | 'slow' | 'fail'
+
 const f = reactive({ name: '', email: '', message: '', _gotcha: '' })
 // store error *keys*, so the text follows the language toggle
-const errors = reactive({ name: '', email: '', message: '' })
-const status = ref('idle') // idle | sending | ok | slow | fail
-const form = ref(null)
+const errors = reactive<Record<FieldName, ErrorKey>>({ name: '', email: '', message: '' })
+const status = ref<Status>('idle')
+const form = ref<HTMLFormElement | null>(null)
 
-const rules = {
+const rules: Record<FieldName, (v: string) => ErrorKey> = {
   name: (v) => (v.trim() ? '' : 'errName'),
   email: (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'errEmail'),
   message: (v) => (v.trim().length >= 10 ? '' : 'errMsg'),
 }
-const check = (k) => (errors[k] = rules[k](f[k]))
-const msg = (k) => (errors[k] ? t().contact[errors[k]] : '')
+const check = (k: FieldName) => (errors[k] = rules[k](f[k]))
+const msg = (k: FieldName) => {
+  const key = errors[k]
+  return key ? t().contact[key] : ''
+}
 
 async function submit() {
-  const bad = Object.keys(rules).filter((k) => check(k))
+  const bad = (Object.keys(rules) as FieldName[]).filter((k) => check(k))
   if (bad.length) {
     await nextTick()
-    form.value?.querySelector(`[name="${bad[0]}"]`)?.focus()
+    form.value?.querySelector<HTMLElement>(`[name="${bad[0]}"]`)?.focus()
     return
   }
   if (f._gotcha || status.value === 'sending') return
@@ -56,7 +63,7 @@ async function submit() {
     f.name = f.email = f.message = ''
   } catch (e) {
     // a timeout does not prove the message was lost, so do not claim a failure
-    status.value = e?.name === 'AbortError' ? 'slow' : 'fail'
+    status.value = e instanceof Error && e.name === 'AbortError' ? 'slow' : 'fail'
   } finally {
     clearTimeout(timer)
   }
@@ -69,7 +76,7 @@ async function submit() {
       <div>
         <h2 id="contact-h">{{ t().contact.title }}</h2>
         <p class="intro">{{ t().contact.intro }}</p>
-        <a class="mail mono" :href="'mailto:' + EMAIL">{{ EMAIL }}</a>
+        <a class="mail" :href="'mailto:' + EMAIL">{{ EMAIL }}</a>
       </div>
 
       <form ref="form" novalidate @submit.prevent="submit">
@@ -95,9 +102,9 @@ async function submit() {
           {{ status === 'sending' ? t().contact.sending : t().contact.send }}
         </button>
 
-        <p v-if="status === 'ok'" class="note ok" role="status">{{ t().contact.ok }}</p>
+        <p v-if="status === 'ok'" class="note" role="status">{{ t().contact.ok }}</p>
         <p v-if="status === 'slow'" class="note" role="status">{{ t().contact.slow }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
-        <p v-if="status === 'fail'" class="note bad" role="alert">{{ t().contact.fail }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
+        <p v-if="status === 'fail'" class="note" role="alert">{{ t().contact.fail }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
       </form>
     </div>
   </section>
@@ -106,9 +113,7 @@ async function submit() {
 <style scoped>
 .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(2rem, 5vw, 5rem); border-top: 1px solid var(--rule); padding-top: 2rem; }
 .intro { color: var(--mute); margin: 1rem 0 2rem; }
-.mail { display: block; width: fit-content; margin-top: 1.5rem; font-size: .95rem; border-bottom: 1px solid var(--accent); padding-bottom: .15rem; overflow-wrap: anywhere; }
-.btn + .mail { margin-top: 1.25rem; }
-.mail { position: relative; }
+.mail { display: block; width: fit-content; margin-top: 1.5rem; font-size: .95rem; border-bottom: 1px solid var(--accent); padding-bottom: .15rem; overflow-wrap: anywhere; position: relative; }
 .mail::before { content: ''; position: absolute; inset: -.6rem -.4rem; }
 .mail:hover { color: var(--accent); }
 form { display: grid; gap: 1.1rem; }
@@ -124,6 +129,5 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 form .btn { justify-self: start; }
 .note { font-size: .95rem; padding-top: .5rem; }
 .note a { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
-.bad a { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
 @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
 </style>
