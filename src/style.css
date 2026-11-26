@@ -3,8 +3,29 @@
 @font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400 900;font-display:swap;src:url("/fonts/schibsted-grotesk-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400 900;font-display:swap;src:url("/fonts/schibsted-grotesk-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
+@custom-variant narrow (@media (max-width: 860px));
+
 @theme {
   --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --default-transition-duration: .2s;
+  --default-transition-timing-function: ease;
+  --animate-hang: hang .9s var(--ease-out-expo) backwards;
+  --animate-swap: swap .4s var(--ease-out-expo);
+
+  @keyframes hang { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+  @keyframes swap { from { opacity: 0; transform: translateY(8px); } }
+}
+
+/* colour utilities (bg-wall, text-accent, ...) that follow the theme switch */
+@theme inline {
+  --color-wall: var(--wall);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
 }
 
 :root, [data-theme="dark"] {
@@ -32,42 +53,27 @@
   color-scheme: light;
 }
 
-html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-@media (max-width: 860px) { html { scroll-padding-top: 7.5rem; } }
-body {
-  background: var(--wall);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 1.0625rem;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  html { @apply scroll-smooth scroll-pt-20 motion-reduce:scroll-auto narrow:scroll-pt-30; }
+  body { @apply bg-wall text-ink font-sans text-[1.0625rem] leading-[1.6] antialiased; }
+  ::selection { @apply bg-accent text-accent-ink; }
+  :focus-visible { @apply rounded-xs outline-2 outline-offset-3 outline-accent; }
+  * { scrollbar-color: var(--rule) var(--wall); }
+  h1, h2, h3 { @apply text-balance tracking-[-.022em] leading-[1.05]; }
+  h2 { @apply text-[clamp(2rem,4.5vw,3.25rem)] font-bold; }
+  p { @apply max-w-[68ch] text-pretty; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .01ms !important; }
+  }
 }
-::selection { background: var(--accent); color: var(--accent-ink); }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-* { scrollbar-color: var(--rule) var(--wall); }
 
-h1, h2, h3 { text-wrap: balance; letter-spacing: -.022em; line-height: 1.05; }
-h2 { font-size: clamp(2rem, 4.5vw, 3.25rem); font-weight: 700; }
-p { max-width: 68ch; text-wrap: pretty; }
-
-.section { padding: clamp(4.5rem, 10vw, 8rem) clamp(1.25rem, 4vw, 3rem) 0; max-width: 90rem; margin-inline: auto; }
-
-.btn {
-  display: inline-flex; align-items: center; gap: .6rem;
-  border: 1px solid var(--ink); color: var(--ink);
-  padding: .8rem 1.4rem; font-size: .9rem; letter-spacing: .06em; text-transform: uppercase;
-  transition: background .25s cubic-bezier(.16,1,.3,1), color .25s cubic-bezier(.16,1,.3,1), border-color .25s;
-  cursor: pointer; background: transparent;
-}
-.btn:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
-.btn.primary:hover { background: transparent; color: var(--accent); }
-.btn:disabled { opacity: .5; cursor: progress; }
-
-@keyframes hang { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
-.hang { animation: hang .9s cubic-bezier(.16,1,.3,1) backwards; animation-delay: calc(var(--i, 0) * 110ms); }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .hang { animation: none; }
-  * { transition-duration: .01ms !important; }
+/* only what is shared between components */
+@layer components {
+  .section { @apply mx-auto max-w-360 px-[clamp(1.25rem,4vw,3rem)] pt-[clamp(4.5rem,10vw,8rem)]; }
+  .btn {
+    @apply inline-flex cursor-pointer items-center gap-[.6rem] border border-ink bg-transparent px-[1.4rem] py-[.8rem] text-[.9rem] uppercase tracking-[.06em] text-ink transition-colors duration-250 ease-out-expo;
+    @apply hover:border-accent hover:bg-accent hover:text-accent-ink disabled:cursor-progress disabled:opacity-50;
+  }
+  .btn-primary { @apply border-accent bg-accent font-semibold text-accent-ink hover:bg-transparent hover:text-accent; }
 }

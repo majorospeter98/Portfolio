@@ -9,7 +9,7 @@ import SiteFooter from './components/SiteFooter.vue'
 </script>
 
 <template>
-  <a href="#main" class="skip">{{ t().skip }}</a>
+  <a href="#main" class="absolute -top-16 left-4 z-50 bg-accent px-4 py-[.6rem] text-accent-ink focus:top-4">{{ t().skip }}</a>
   <SiteHeader />
   <main id="main">
     <Hero />
@@ -19,8 +19,3 @@ import SiteFooter from './components/SiteFooter.vue'
   </main>
   <SiteFooter />
 </template>
-
-<style>
-.skip { position: absolute; left: 1rem; top: -4rem; background: var(--accent); color: var(--accent-ink); padding: .6rem 1rem; z-index: 50; }
-.skip:focus { top: 1rem; }
-</style>

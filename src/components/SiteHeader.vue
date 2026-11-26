@@ -3,36 +3,19 @@ import { state, t } from '../i18n'
 const links = ['projects', 'tech', 'contact'] as const
 const toggleLang = () => (state.lang = state.lang === 'hu' ? 'en' : 'hu')
 const toggleTheme = () => (state.theme = state.theme === 'dark' ? 'light' : 'dark')
+
+// 44px hit areas wherever a finger may be the pointer
+const chip = 'cursor-pointer border border-rule bg-transparent px-3 py-[.4rem] text-[.875rem] font-medium text-ink transition-colors hover:border-accent hover:text-accent pointer-coarse:min-h-11 pointer-coarse:px-4 narrow:min-h-11 narrow:px-4'
 </script>
 
 <template>
-  <header class="head">
-    <nav aria-label="Main" class="nav">
-      <a v-for="l in links" :key="l" :href="'#' + l">{{ t().nav[l] }}</a>
+  <header class="sticky top-0 z-20 flex h-17 items-center gap-6 border-b border-rule bg-wall px-[clamp(1.25rem,4vw,3rem)] narrow:h-auto narrow:flex-wrap narrow:gap-x-3 narrow:gap-y-2 narrow:py-[.6rem]">
+    <nav aria-label="Main" class="ml-auto flex gap-8 text-[.95rem] text-mute narrow:order-3 narrow:w-full narrow:gap-6 narrow:pb-[.2rem] narrow:text-[.9rem]">
+      <a v-for="l in links" :key="l" :href="'#' + l" class="border-b border-transparent py-[.4rem] transition-colors hover:border-accent hover:text-ink narrow:py-[.65rem]">{{ t().nav[l] }}</a>
     </nav>
-    <div class="tools">
-      <button class="chip" type="button" :aria-label="t().toggleLangLabel" @click="toggleLang">{{ t().toggleLang }}</button>
-      <button class="chip" type="button" :aria-label="t().toggleThemeLabel[state.theme]" @click="toggleTheme">{{ t().toggleTheme[state.theme] }}</button>
+    <div class="flex gap-2">
+      <button :class="chip" type="button" :aria-label="t().toggleLangLabel" @click="toggleLang">{{ t().toggleLang }}</button>
+      <button :class="chip" type="button" :aria-label="t().toggleThemeLabel[state.theme]" @click="toggleTheme">{{ t().toggleTheme[state.theme] }}</button>
     </div>
   </header>
 </template>
-
-<style scoped>
-.head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 1.5rem; height: 4.25rem; padding: 0 clamp(1.25rem, 4vw, 3rem); background: var(--wall); border-bottom: 1px solid var(--rule); }
-
-.nav { display: flex; margin-left: auto; gap: 2rem; font-size: .95rem; color: var(--mute); }
-.nav a { padding: .4rem 0; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
-.nav a:hover { color: var(--ink); border-color: var(--accent); }
-.tools { display: flex; gap: .5rem; }
-.chip { border: 1px solid var(--rule); color: var(--ink); padding: .4rem .75rem; font-size: .875rem; font-weight: 500; background: transparent; cursor: pointer; transition: border-color .2s, color .2s; }
-.chip:hover { border-color: var(--accent); color: var(--accent); }
-@media (max-width: 860px) {
-  .head { flex-wrap: wrap; height: auto; padding-block: .6rem; gap: .5rem .75rem; }
-  .nav { order: 3; width: 100%; gap: 1.5rem; font-size: .9rem; padding-bottom: .2rem; }
-  .nav a { padding: .65rem 0; }
-}
-/* 44px hit areas wherever a finger may be the pointer */
-@media (pointer: coarse), (max-width: 860px) {
-  .chip { min-height: 2.75rem; padding-inline: 1rem; }
-}
-</style>

@@ -29,6 +29,9 @@ const msg = (k: FieldName) => {
   return key ? t().contact[key] : ''
 }
 
+// shared by the inputs and the textarea
+const control = 'w-full resize-y rounded-none border border-rule bg-panel px-4 py-[.85rem] text-[1rem] text-ink transition-colors hover:border-mute focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent)_28%,transparent)] focus:outline-none aria-invalid:border-accent'
+
 async function submit() {
   const bad = (Object.keys(rules) as FieldName[]).filter((k) => check(k))
   if (bad.length) {
@@ -72,62 +75,40 @@ async function submit() {
 
 <template>
   <section id="contact" class="section" aria-labelledby="contact-h">
-    <div class="grid">
+    <div class="grid grid-cols-[minmax(0,5fr)_minmax(0,6fr)] gap-[clamp(2rem,5vw,5rem)] border-t border-rule pt-8 narrow:grid-cols-1">
       <div>
         <h2 id="contact-h">{{ t().contact.title }}</h2>
-        <p class="intro">{{ t().contact.intro }}</p>
-        <a class="mail" :href="'mailto:' + EMAIL">{{ EMAIL }}</a>
+        <p class="mt-4 mb-8 text-mute">{{ t().contact.intro }}</p>
+        <a class="relative mt-6 block w-fit border-b border-accent pb-[.15rem] text-[.95rem] wrap-anywhere before:absolute before:-inset-x-[.4rem] before:-inset-y-[.6rem] hover:text-accent" :href="'mailto:' + EMAIL">{{ EMAIL }}</a>
       </div>
 
-      <form ref="form" novalidate @submit.prevent="submit">
-        <p class="req">{{ t().contact.required }}</p>
-        <div class="field">
-          <label for="c-name">{{ t().contact.name }}</label>
-          <input id="c-name" v-model="f.name" name="name" type="text" autocomplete="name" aria-required="true" :maxlength="LIMITS.name" :aria-invalid="!!errors.name" aria-describedby="e-name" @blur="check('name')" @input="errors.name && check('name')" />
-          <p id="e-name" class="err" role="alert">{{ msg('name') }}</p>
+      <form ref="form" class="grid gap-[1.1rem]" novalidate @submit.prevent="submit">
+        <p class="text-[.85rem] text-mute">{{ t().contact.required }}</p>
+        <div class="grid gap-[.4rem]">
+          <label class="text-[.85rem] text-mute" for="c-name">{{ t().contact.name }}</label>
+          <input :class="control" id="c-name" v-model="f.name" name="name" type="text" autocomplete="name" aria-required="true" :maxlength="LIMITS.name" :aria-invalid="!!errors.name" aria-describedby="e-name" @blur="check('name')" @input="errors.name && check('name')" />
+          <p id="e-name" class="min-h-[1.2em] text-[.85rem] text-accent" role="alert">{{ msg('name') }}</p>
         </div>
-        <div class="field">
-          <label for="c-email">{{ t().contact.email }}</label>
-          <input id="c-email" v-model="f.email" name="email" type="email" autocomplete="email" aria-required="true" :maxlength="LIMITS.email" :aria-invalid="!!errors.email" aria-describedby="e-email" @blur="check('email')" @input="errors.email && check('email')" />
-          <p id="e-email" class="err" role="alert">{{ msg('email') }}</p>
+        <div class="grid gap-[.4rem]">
+          <label class="text-[.85rem] text-mute" for="c-email">{{ t().contact.email }}</label>
+          <input :class="control" id="c-email" v-model="f.email" name="email" type="email" autocomplete="email" aria-required="true" :maxlength="LIMITS.email" :aria-invalid="!!errors.email" aria-describedby="e-email" @blur="check('email')" @input="errors.email && check('email')" />
+          <p id="e-email" class="min-h-[1.2em] text-[.85rem] text-accent" role="alert">{{ msg('email') }}</p>
         </div>
-        <div class="field">
-          <label for="c-msg">{{ t().contact.message }}</label>
-          <textarea id="c-msg" v-model="f.message" name="message" rows="5" aria-required="true" :maxlength="LIMITS.message" :aria-invalid="!!errors.message" aria-describedby="e-msg" @blur="check('message')" @input="errors.message && check('message')"></textarea>
-          <p id="e-msg" class="err" role="alert">{{ msg('message') }}</p>
+        <div class="grid gap-[.4rem]">
+          <label class="text-[.85rem] text-mute" for="c-msg">{{ t().contact.message }}</label>
+          <textarea :class="control" id="c-msg" v-model="f.message" name="message" rows="5" aria-required="true" :maxlength="LIMITS.message" :aria-invalid="!!errors.message" aria-describedby="e-msg" @blur="check('message')" @input="errors.message && check('message')"></textarea>
+          <p id="e-msg" class="min-h-[1.2em] text-[.85rem] text-accent" role="alert">{{ msg('message') }}</p>
         </div>
-        <input v-model="f._gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+        <input v-model="f._gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true" />
 
-        <button class="btn primary" type="submit" :disabled="status === 'sending'">
+        <button class="btn btn-primary justify-self-start" type="submit" :disabled="status === 'sending'">
           {{ status === 'sending' ? t().contact.sending : t().contact.send }}
         </button>
 
-        <p v-if="status === 'ok'" class="note" role="status">{{ t().contact.ok }}</p>
-        <p v-if="status === 'slow'" class="note" role="status">{{ t().contact.slow }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
-        <p v-if="status === 'fail'" class="note" role="alert">{{ t().contact.fail }} <a :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
+        <p v-if="status === 'ok'" class="pt-2 text-[.95rem]" role="status">{{ t().contact.ok }}</p>
+        <p v-if="status === 'slow'" class="pt-2 text-[.95rem]" role="status">{{ t().contact.slow }} <a class="text-accent underline underline-offset-[.2em]" :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
+        <p v-if="status === 'fail'" class="pt-2 text-[.95rem]" role="alert">{{ t().contact.fail }} <a class="text-accent underline underline-offset-[.2em]" :href="'mailto:' + EMAIL">{{ EMAIL }}</a></p>
       </form>
     </div>
   </section>
 </template>
-
-<style scoped>
-.grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(2rem, 5vw, 5rem); border-top: 1px solid var(--rule); padding-top: 2rem; }
-.intro { color: var(--mute); margin: 1rem 0 2rem; }
-.mail { display: block; width: fit-content; margin-top: 1.5rem; font-size: .95rem; border-bottom: 1px solid var(--accent); padding-bottom: .15rem; overflow-wrap: anywhere; position: relative; }
-.mail::before { content: ''; position: absolute; inset: -.6rem -.4rem; }
-.mail:hover { color: var(--accent); }
-form { display: grid; gap: 1.1rem; }
-.field { display: grid; gap: .4rem; }
-label { font-size: .85rem; color: var(--mute); }
-input:not(.hp), textarea { width: 100%; background: var(--panel); color: var(--ink); border: 1px solid var(--rule); padding: .85rem 1rem; font: inherit; font-size: 1rem; border-radius: 0; transition: border-color .2s; resize: vertical; }
-input:not(.hp):hover, textarea:hover { border-color: var(--mute); }
-input:not(.hp):focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent); }
-input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--accent); }
-.req { font-size: .85rem; color: var(--mute); }
-.err { min-height: 1.2em; font-size: .85rem; color: var(--accent); }
-.hp { position: absolute; left: -9999px; }
-form .btn { justify-self: start; }
-.note { font-size: .95rem; padding-top: .5rem; }
-.note a { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
-@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-</style>

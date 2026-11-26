@@ -35,8 +35,9 @@ const ytId = (p: Project) => {
 }
 const isFile = (p: Project) => /\.(mp4|webm)(\?.*)?$/i.test(p.video || '')
 const hasLinks = (p: Project) => p.live || p.repo || p.video || p.privateRepo
-// the address shown in the browser frame: the live demo only; no address bar text when there is none
-const address = (p: Project) => (p.live || '').replace(/^https?:\/\//, '').replace(/\/$/, '')
+
+const hasMedia = (p: Project) => Boolean(current(p) || ytId(p) || isFile(p))
+const videoBox = 'aspect-video w-full border border-rule bg-wall'
 
 function select(i: number) {
   active.value = i
@@ -58,17 +59,17 @@ function onKey(e: KeyboardEvent) {
 
 <template>
   <section id="projects" class="section" aria-labelledby="proj-h">
-    <div class="top">
+    <div class="border-t border-rule pt-8">
       <h2 id="proj-h">{{ t().projects.title }}</h2>
     </div>
 
-    <div class="tabs" role="tablist" :aria-label="t().projects.title" @keydown="onKey">
+    <div class="mt-10 flex w-fit max-w-full overflow-x-auto border border-rule [scrollbar-width:thin] narrow:grid narrow:w-full narrow:grid-cols-2" role="tablist" :aria-label="t().projects.title" @keydown="onKey">
       <button
         v-for="(p, i) in projects"
         :key="p.no"
         :ref="(el) => setTab(el, i)"
         :id="'tab-' + p.no"
-        class="tab"
+        class="flex-none cursor-pointer whitespace-nowrap border-r border-rule bg-transparent px-[1.4rem] py-[.8rem] text-[1rem] font-semibold text-mute transition-colors last:border-r-0 hover:text-ink focus-visible:-outline-offset-3 aria-selected:bg-ink aria-selected:text-wall narrow:min-h-11 narrow:min-w-0 narrow:even:border-r-0 narrow:[&:nth-child(-n+2)]:border-b narrow:whitespace-normal narrow:px-2 narrow:py-[.6rem] narrow:text-[.9rem] narrow:leading-[1.2]"
         type="button"
         role="tab"
         :aria-selected="i === active"
@@ -81,110 +82,52 @@ function onKey(e: KeyboardEvent) {
     <article
       :key="project.no"
       :id="'panel-' + project.no"
-      class="panel"
-      :class="{ solo: !current(project) && !ytId(project) && !isFile(project) }"
+      class="mt-7 grid animate-swap items-start gap-[clamp(1.5rem,4vw,3rem)] focus-visible:outline-offset-6 motion-reduce:animate-none narrow:grid-cols-[minmax(0,1fr)]"
+      :class="hasMedia(project) ? 'grid-cols-[minmax(0,8fr)_minmax(0,3fr)]' : 'grid-cols-[minmax(0,1fr)]'"
       role="tabpanel"
       :aria-labelledby="'tab-' + project.no"
       tabindex="0"
     >
-      <div v-if="current(project) || ytId(project) || isFile(project)" class="media">
-        <div v-if="current(project)" class="win">
-          <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span v-if="address(project)">{{ address(project) }}</span></div>
-          <img :src="current(project).src" :alt="current(project).alt" class="shot" />
+      <div v-if="hasMedia(project)" class="grid min-w-0 gap-[.9rem]">
+        <div v-if="current(project)" class="overflow-hidden border border-rule bg-panel">
+          <img :src="current(project).src" :alt="current(project).alt" class="block aspect-2/1 w-full bg-white object-contain brightness-95" />
         </div>
-        <div v-if="shots(project).length > 1" class="ticks" role="group" :aria-label="title(project)">
+        <div v-if="shots(project).length > 1" class="flex gap-[.4rem]" role="group" :aria-label="title(project)">
           <button
             v-for="(s, i) in shots(project)"
             :key="s.src"
             type="button"
-            class="tick"
+            class="relative h-6 flex-1 cursor-pointer bg-transparent p-0 after:absolute after:inset-x-0 after:top-1/2 after:-mt-[1.5px] after:h-[3px] after:bg-rule after:transition-colors hover:after:bg-mute aria-pressed:after:bg-accent pointer-coarse:h-11"
             :aria-pressed="i === index(project)"
             :aria-label="s.caption || s.alt"
             @click="cur[project.no] = i"
           ></button>
         </div>
-        <p v-if="current(project) && current(project).caption" class="cap" aria-live="polite">{{ index(project) + 1 }}/{{ shots(project).length }} · {{ current(project).caption }}</p>
+        <p v-if="current(project) && current(project).caption" class="text-[.875rem] text-mute" aria-live="polite">{{ index(project) + 1 }}/{{ shots(project).length }} · {{ current(project).caption }}</p>
 
-        <div v-if="ytId(project)" class="video">
-          <iframe v-if="playing[project.no]" :src="'https://www.youtube-nocookie.com/embed/' + ytId(project) + '?autoplay=1&rel=0'" :title="t().projects.video + ': ' + title(project)" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-          <button v-else type="button" class="play" :style="{ backgroundImage: project.poster ? 'url(' + project.poster + ')' : 'none' }" @click="playing[project.no] = true">
-            <span>▶ {{ t().projects.play }}</span>
+        <div v-if="ytId(project)" :class="videoBox">
+          <iframe class="block size-full" v-if="playing[project.no]" :src="'https://www.youtube-nocookie.com/embed/' + ytId(project) + '?autoplay=1&rel=0'" :title="t().projects.video + ': ' + title(project)" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          <button v-else type="button" class="group grid size-full cursor-pointer place-items-center bg-transparent bg-cover bg-center text-ink" :style="{ backgroundImage: project.poster ? 'url(' + project.poster + ')' : 'none' }" @click="playing[project.no] = true">
+            <span class="border border-ink bg-wall px-[1.4rem] py-[.8rem] text-[.85rem] transition-colors duration-250 group-hover:bg-accent group-hover:text-accent-ink">▶ {{ t().projects.play }}</span>
           </button>
         </div>
-        <video v-else-if="isFile(project)" class="video" controls preload="none" :poster="project.poster" :src="project.video" :aria-label="title(project)"></video>
+        <video v-else-if="isFile(project)" :class="videoBox" controls preload="none" :poster="project.poster" :src="project.video" :aria-label="title(project)"></video>
       </div>
 
-      <div class="label">
-        <h3>{{ title(project) }}</h3>
-        <p class="desc">{{ project.desc[state.lang] }}</p>
-        <p v-if="project.stack.length" class="stack">{{ project.stack.join(' · ') }}</p>
-        <ul v-if="project.highlights?.[state.lang]?.length" class="hl">
+      <div class="grid min-w-0 gap-[.9rem] border-t border-ink pt-[1.1rem]" :class="{ 'max-w-160': !hasMedia(project) }">
+        <h3 class="text-[clamp(1.7rem,2.8vw,2.3rem)] font-bold">{{ title(project) }}</h3>
+        <p class="text-mute">{{ project.desc[state.lang] }}</p>
+        <p v-if="project.stack.length" class="text-[.9rem] font-medium">{{ project.stack.join(' · ') }}</p>
+        <ul v-if="project.highlights?.[state.lang]?.length" class="grid gap-[.3rem] pl-[1.1rem] text-mute marker:text-accent">
           <li v-for="h in project.highlights[state.lang]" :key="h">{{ h }}</li>
         </ul>
-        <div v-if="hasLinks(project)" class="links">
-          <a v-if="project.live" class="btn" :href="project.live" target="_blank" rel="noopener">{{ t().projects.live }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <a v-if="project.repo" class="btn" :href="project.repo" target="_blank" rel="noopener">{{ t().projects.repo }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <a v-if="project.video && !ytId(project) && !isFile(project)" class="btn" :href="project.video" target="_blank" rel="noopener">{{ t().projects.video }} ↗ <span class="sr">({{ t().projects.open }})</span></a>
-          <span v-if="project.privateRepo" class="soon">{{ t().projects.onRequest }}</span>
+        <div v-if="hasLinks(project)" class="flex flex-wrap gap-3 pt-[.3rem]">
+          <a v-if="project.live" class="btn text-[.95rem] normal-case tracking-normal" :href="project.live" target="_blank" rel="noopener">{{ t().projects.live }} ↗ <span class="sr-only">({{ t().projects.open }})</span></a>
+          <a v-if="project.repo" class="btn text-[.95rem] normal-case tracking-normal" :href="project.repo" target="_blank" rel="noopener">{{ t().projects.repo }} ↗ <span class="sr-only">({{ t().projects.open }})</span></a>
+          <a v-if="project.video && !ytId(project) && !isFile(project)" class="btn text-[.95rem] normal-case tracking-normal" :href="project.video" target="_blank" rel="noopener">{{ t().projects.video }} ↗ <span class="sr-only">({{ t().projects.open }})</span></a>
+          <span v-if="project.privateRepo" class="self-center text-[.85rem] text-mute">{{ t().projects.onRequest }}</span>
         </div>
       </div>
     </article>
   </section>
 </template>
-
-<style scoped>
-.top { border-top: 1px solid var(--rule); padding-top: 2rem; }
-
-/* segmented control: one cell per project, the active one inverted */
-.tabs { display: flex; width: fit-content; max-width: 100%; margin-top: 2.5rem; border: 1px solid var(--rule); overflow-x: auto; scrollbar-width: thin; }
-.tab { flex: none; padding: .8rem 1.4rem; font: inherit; font-size: 1rem; font-weight: 600; color: var(--mute); background: transparent; border: 0; border-right: 1px solid var(--rule); cursor: pointer; white-space: nowrap; transition: color .2s, background .2s; }
-.tab:last-child { border-right: 0; }
-.tab:hover { color: var(--ink); }
-.tab[aria-selected="true"] { background: var(--ink); color: var(--wall); }
-.tab:focus-visible { outline-offset: -3px; }
-
-.panel { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 3fr); gap: clamp(1.5rem, 4vw, 3rem); margin-top: 1.75rem; align-items: start; animation: swap .4s cubic-bezier(.16, 1, .3, 1); }
-.panel.solo { grid-template-columns: minmax(0, 1fr); }
-.panel:focus-visible { outline-offset: 6px; }
-@keyframes swap { from { opacity: 0; transform: translateY(8px); } }
-
-.media { display: grid; gap: .9rem; min-width: 0; }
-.win { border: 1px solid var(--rule); background: var(--panel); overflow: hidden; }
-.bar { display: flex; align-items: center; gap: .4rem; height: 2.1rem; padding: 0 .8rem; background: color-mix(in srgb, var(--panel) 70%, var(--rule)); border-bottom: 1px solid var(--rule); }
-.bar i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--rule); flex: none; }
-.bar span { margin-left: .6rem; flex: 1; max-width: 22rem; padding: .15rem .8rem; font-size: .8125rem; color: var(--mute); background: var(--wall); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.shot { display: block; width: 100%; height: auto; filter: brightness(.95); }
-
-.ticks { display: flex; gap: .4rem; }
-.tick { flex: 1; height: 1.5rem; padding: 0; border: 0; background: transparent; cursor: pointer; position: relative; }
-.tick::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; background: var(--rule); transition: background .2s; }
-@media (pointer: coarse) { .tick { height: 2.75rem; } }
-.tick:hover::after { background: var(--mute); }
-.tick[aria-pressed="true"]::after { background: var(--accent); }
-.cap { font-size: .875rem; color: var(--mute); }
-
-.video { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--rule); background: var(--wall); }
-.video iframe { width: 100%; height: 100%; border: 0; display: block; }
-.play { width: 100%; height: 100%; display: grid; place-items: center; background-size: cover; background-position: center; color: var(--ink); cursor: pointer; border: 0; background-color: transparent; }
-.play:hover span { background: var(--accent); color: var(--accent-ink); }
-.play span { background: var(--wall); border: 1px solid var(--ink); padding: .8rem 1.4rem; font-size: .85rem; transition: background .25s, color .25s; }
-
-.label { display: grid; gap: .9rem; min-width: 0; padding-top: 1.1rem; border-top: 1px solid var(--ink); }
-.solo .label { max-width: 40rem; }
-h3 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); font-weight: 700; }
-.desc { color: var(--mute); }
-.stack { font-size: .9rem; font-weight: 500; }
-.hl { margin: 0; padding-left: 1.1rem; color: var(--mute); display: grid; gap: .3rem; }
-.hl li::marker { color: var(--accent); }
-.links { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: .3rem; }
-.links .btn { text-transform: none; letter-spacing: 0; font-size: .95rem; }
-.soon { font-size: .85rem; color: var(--mute); align-self: center; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-@media (max-width: 860px) {
-  .panel { grid-template-columns: minmax(0, 1fr); }
-  .tabs { width: 100%; }
-  .tab { flex: 1 1 0; min-width: 0; min-height: 2.75rem; padding: .6rem .5rem; font-size: .9rem; white-space: normal; line-height: 1.2; }
-}
-@media (prefers-reduced-motion: reduce) { .panel { animation: none; } }
-</style>

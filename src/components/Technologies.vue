@@ -15,31 +15,17 @@ const icon = (name: string) => {
 
 <template>
   <section id="tech" class="section" aria-labelledby="tech-h">
-    <div class="head">
+    <div class="border-t border-rule pt-8">
       <h2 id="tech-h">{{ t().tech.title }}</h2>
     </div>
-    <div v-for="g in tech" :key="g.group" class="group">
-      <h3 class="gl">{{ t().tech.groups[g.group] }}</h3>
-      <ul class="pills">
-        <li v-for="x in g.items" :key="x.name" class="pill">
-          <span v-if="x.icon" class="ic" v-html="icon(x.icon)"></span>
-          <span class="nm">{{ x.name }}</span>
+    <div v-for="g in tech" :key="g.group" class="mt-8">
+      <h3 class="text-[.875rem] font-medium uppercase tracking-[.06em] text-mute">{{ t().tech.groups[g.group] }}</h3>
+      <ul class="mt-[.9rem] flex flex-wrap gap-3">
+        <li v-for="x in g.items" :key="x.name" class="group inline-flex items-center gap-[.8rem] border border-rule bg-panel py-[.7rem] pl-[1.1rem] pr-[1.4rem] transition-[border-color,translate] duration-250 ease-out-expo hover:-translate-y-0.5 hover:border-accent motion-reduce:hover:translate-y-0">
+          <span v-if="x.icon" class="block size-6 text-ink transition-colors duration-250 group-hover:text-accent [&_svg]:block [&_svg]:size-full" v-html="icon(x.icon)"></span>
+          <span class="text-[clamp(1.05rem,1.6vw,1.35rem)] font-semibold leading-none tracking-[-.02em]">{{ x.name }}</span>
         </li>
       </ul>
     </div>
   </section>
 </template>
-
-<style scoped>
-.head { border-top: 1px solid var(--rule); padding-top: 2rem; }
-.group { margin-top: 2rem; }
-.gl { font-size: .875rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); }
-.pills { list-style: none; margin: .9rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .75rem; }
-.pill { display: inline-flex; align-items: center; gap: .8rem; border: 1px solid var(--rule); background: var(--panel); padding: .7rem 1.4rem .7rem 1.1rem; transition: border-color .25s, transform .25s cubic-bezier(.16, 1, .3, 1); }
-.pill:hover { border-color: var(--accent); transform: translateY(-2px); }
-.ic { display: block; width: 1.5rem; height: 1.5rem; color: var(--ink); transition: color .25s; }
-.ic :deep(svg) { display: block; width: 100%; height: 100%; }
-.pill:hover .ic { color: var(--accent); }
-.nm { font-size: clamp(1.05rem, 1.6vw, 1.35rem); font-weight: 600; letter-spacing: -.02em; line-height: 1; }
-@media (prefers-reduced-motion: reduce) { .pill:hover { transform: none; } }
-</style>
